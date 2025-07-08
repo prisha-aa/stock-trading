@@ -1,0 +1,198 @@
+openapi: 3.0.0
+info:
+  title: Market Data & Information Service API
+  version: 1.0.0
+  description: API for retrieving real-time and historical market data, and company information.
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+tags:
+  - name: Market Data
+    description: Operations related to stock prices, quotes, and historical data.
+  - name: Company Information
+    description: Operations related to company profiles and financial statements.
+paths:
+  /market-data/quotes:
+    get:
+      summary: Get real-time stock prices and quotes
+      operationId: getMarketQuotes
+      tags:
+        - Market Data
+      parameters:
+        - in: query
+          name: symbols
+          schema:
+            type: array
+            items:
+              type: string
+          description: Comma-separated list of stock symbols (e.g., AAPL,GOOGL).
+          example: AAPL,GOOGL
+      responses:
+        '200':
+          description: Successful retrieval of real-time quotes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    symbol:
+                      type: string
+                      example: AAPL
+                    price:
+                      type: number
+                      format: float
+                      example: 175.25
+                    change:
+                      type: number
+                      format: float
+                      example: 1.50
+                    changePercent:
+                      type: number
+                      format: float
+                      example: 0.86
+                    timestamp:
+                      type: integer
+                      format: int64
+                      example: 1678886400
+        '400':
+          description: Invalid symbols provided.
+  /market-data/history/{symbol}:
+    get:
+      summary: Get historical stock data for a symbol
+      operationId: getHistoricalData
+      tags:
+        - Market Data
+      parameters:
+        - in: path
+          name: symbol
+          schema:
+            type: string
+          required: true
+          description: Stock symbol (e.g., AAPL).
+          example: AAPL
+        - in: query
+          name: range
+          schema:
+            type: string
+            enum: [1d, 5d, 1mo, 3mo, 6mo, 1y, 5y, max]
+          description: Time range for historical data.
+          example: 1y
+        - in: query
+          name: interval
+          schema:
+            type: string
+            enum: [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo]
+          description: Data interval.
+          example: 1d
+      responses:
+        '200':
+          description: Successful retrieval of historical data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbol:
+                    type: string
+                    example: AAPL
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          example: 2023-03-15
+                        open:
+                          type: number
+                          format: float
+                          example: 170.00
+                        high:
+                          type: number
+                          format: float
+                          example: 172.50
+                        low:
+                          type: number
+                          format: float
+                          example: 169.80
+                        close:
+                          type: number
+                          format: float
+                          example: 171.20
+                        volume:
+                          type: integer
+                          example: 75000000
+        '404':
+          description: Symbol not found or no data for the specified range/interval.
+  /companies/{symbol}/profile:
+    get:
+      summary: Get company profile and financial statements
+      operationId: getCompanyProfile
+      tags:
+        - Company Information
+      parameters:
+        - in: path
+          name: symbol
+          schema:
+            type: string
+          required: true
+          description: Stock symbol (e.g., AAPL).
+          example: AAPL
+      responses:
+        '200':
+          description: Successful retrieval of company profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbol:
+                    type: string
+                    example: AAPL
+                  companyName:
+                    type: string
+                    example: Apple Inc.
+                  exchange:
+                    type: string
+                    example: NASDAQ
+                  industry:
+                    type: string
+                    example: Technology
+                  sector:
+                    type: string
+                    example: Electronic Technology
+                  description:
+                    type: string
+                    example: Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.
+                  website:
+                    type: string
+                    format: url
+                    example: https://www.apple.com
+                  ceo:
+                    type: string
+                    example: Timothy D. Cook
+                  employees:
+                    type: integer
+                    example: 164000
+                  financials:
+                    type: object
+                    properties:
+                      revenue:
+                        type: number
+                        format: float
+                        example: 394328000000
+                      netIncome:
+                        type: number
+                        format: float
+                        example: 99803000000
+                      marketCap:
+                        type: number
+                        format: float
+                        example: 2700000000000
+        '404':
+          description: Company profile not found for the given symbol.
+
+
