@@ -1,0 +1,320 @@
+openapi: 3.0.0
+info:
+  title: User Service API
+  version: 1.0.0
+  description: API for managing user accounts and profiles.
+servers:
+  - url: http://localhost:3000/users
+    description: Local development server
+tags:
+  - name: User Management
+    description: Operations related to user registration, login, and profile management.
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      tags:
+        - User Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  description: Unique username for the new user.
+                  example: johndoe
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the new user.
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  format: password
+                  description: Password for the new user.
+                  example: SecureP@ssw0rd
+      responses:
+        '201':
+          description: User registered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully.
+                  userId:
+                    type: string
+                    example: '123e4567-e89b-12d3-a456-426614174000'
+        '400':
+          description: Invalid input or user already exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Username or email already exists.
+  /login:
+    post:
+      summary: User login
+      operationId: loginUser
+      tags:
+        - User Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: Username of the user.
+                  example: johndoe
+                password:
+                  type: string
+                  format: password
+                  description: Password of the user.
+                  example: SecureP@ssw0rd
+      responses:
+        '200':
+          description: User logged in successfully.
+          headers:
+            Authorization:
+              schema:
+                type: string
+                description: JWT token for authentication.
+                example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successful.
+                  userId:
+                    type: string
+                    example: '123e4567-e89b-12d3-a456-426614174000'
+        '401':
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid username or password.
+  /logout:
+    post:
+      summary: User logout
+      operationId: logoutUser
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User logged out successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout successful.
+        '401':
+          description: Unauthorized.
+  /{userId}/profile:
+    get:
+      summary: Get user profile
+      operationId: getUserProfile
+      tags:
+        - User Management
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Unique ID of the user.
+          example: '123e4567-e89b-12d3-a456-426614174000'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    example: '123e4567-e89b-12d3-a456-426614174000'
+                  username:
+                    type: string
+                    example: johndoe
+                  email:
+                    type: string
+                    format: email
+                    example: john.doe@example.com
+                  firstName:
+                    type: string
+                    example: John
+                  lastName:
+                    type: string
+                    example: Doe
+        '401':
+          description: Unauthorized.
+        '404':
+          description: User not found.
+    put:
+      summary: Update user profile
+      operationId: updateUserProfile
+      tags:
+        - User Management
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Unique ID of the user.
+          example: '123e4567-e89b-12d3-a456-426614174000'
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: New email address.
+                  example: new.email@example.com
+                firstName:
+                  type: string
+                  description: New first name.
+                  example: Jonathan
+                lastName:
+                  type: string
+                  description: New last name.
+                  example: Smith
+      responses:
+        '200':
+          description: User profile updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User profile updated successfully.
+        '400':
+          description: Invalid input.
+        '401':
+          description: Unauthorized.
+        '404':
+          description: User not found.
+  /password/reset-request:
+    post:
+      summary: Request password reset
+      operationId: requestPasswordReset
+      tags:
+        - User Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user requesting password reset.
+                  example: john.doe@example.com
+      responses:
+        '200':
+          description: Password reset email sent successfully (if email exists).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset email sent.
+        '400':
+          description: Invalid email format.
+  /password/reset:
+    post:
+      summary: Reset password
+      operationId: resetPassword
+      tags:
+        - User Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - newPassword
+              properties:
+                token:
+                  type: string
+                  description: Password reset token received via email.
+                  example: 'some_long_reset_token'
+                newPassword:
+                  type: string
+                  format: password
+                  description: New password for the user.
+                  example: NewSecureP@ssw0rd
+      responses:
+        '200':
+          description: Password reset successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset successfully.
+        '400':
+          description: Invalid token or password.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
