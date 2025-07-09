@@ -153,7 +153,7 @@ paths:
                     type: string
                     example: AAPL
                   companyName:
-                    type: string
+                    type: string  
                     example: Apple Inc.
                   exchange:
                     type: string
