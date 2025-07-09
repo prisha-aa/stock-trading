@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: Fund Service API
+  version: 1.0.0
+  description: API for managing user fund transactions and balance overview.
+servers:
+  - url: http://localhost:3002/funds
+    description: Local development server
+tags:
+  - name: Fund Service
+    description: Operations related to deposits, withdrawals, and fund overview.
+paths:
+  /users/{userId}/transactions:
+    post:
+      summary: Create a deposit or withdrawal transaction for a user
+      operationId: createUserTransaction
+      tags:
+        - Fund Service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - amount
+              properties:
+                type:
+                  type: string
+                  enum: [deposit, withdrawal]
+                  example: deposit
+                amount:
+                  type: number
+                  format: float
+                  example: 1000.00
+                description:
+                  type: string
+                  example: "Monthly savings deposit"
+      responses:
+        '201':
+          description: Transaction created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+                    example: tx789
+                  userId:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174000
+                  type:
+                    type: string
+                    enum: [deposit, withdrawal]
+                    example: deposit
+                  amount:
+                    type: number
+                    format: float
+                    example: 1000.00
+                  description:
+                    type: string
+                    example: "Monthly savings deposit"
+                  date:
+                    type: string
+                    format: date-time
+                    example: 2025-07-09T17:30:00Z
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{userId}/funds/overview:
+    get:
+      summary: Retrieve user's current balance and recent fund transactions
+      operationId: getUserFundsOverview
+      tags:
+        - Fund Service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Funds overview retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+                    format: float
+                    example: 5000.75
+                  transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: string
+                          example: tx123
+                        type:
+                          type: string
+                          enum: [deposit, withdrawal]
+                          example: withdrawal
+                        amount:
+                          type: number
+                          format: float
+                          example: 250.00
+                        date:
+                          type: string
+                          format: date-time
+                          example: 2025-07-05T14:00:00Z
+                        description:
+                          type: string
+                          example: "ATM withdrawal"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Invalid user ID format
+        details:
+          type: string
+          nullable: true
+          example: User ID must be a valid UUID
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Invalid request data
+            details: Amount must be positive and type must be deposit or withdrawal
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+            details: Missing or invalid authentication token
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: User not found
+            details: No user exists with the given userId
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 500
+            message: Internal server error
+            details: Unexpected error occurred while processing the request
