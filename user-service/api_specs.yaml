@@ -6,9 +6,11 @@ info:
 servers:
   - url: http://localhost:3000/users
     description: Local development server
+
 tags:
   - name: User Management
     description: Operations related to user registration, login, and profile management.
+
 paths:
   /register:
     post:
@@ -29,17 +31,14 @@ paths:
               properties:
                 username:
                   type: string
-                  description: Unique username for the new user.
                   example: johndoe
                 email:
                   type: string
                   format: email
-                  description: Email address of the new user.
                   example: john.doe@example.com
                 password:
                   type: string
                   format: password
-                  description: Password for the new user.
                   example: SecureP@ssw0rd
       responses:
         '201':
@@ -56,15 +55,8 @@ paths:
                     type: string
                     example: '123e4567-e89b-12d3-a456-426614174000'
         '400':
-          description: Invalid input or user already exists.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Username or email already exists.
+          $ref: '#/components/responses/BadRequest'
+
   /login:
     post:
       summary: User login
@@ -83,12 +75,10 @@ paths:
               properties:
                 username:
                   type: string
-                  description: Username of the user.
                   example: johndoe
                 password:
                   type: string
                   format: password
-                  description: Password of the user.
                   example: SecureP@ssw0rd
       responses:
         '200':
@@ -97,8 +87,7 @@ paths:
             Authorization:
               schema:
                 type: string
-                description: JWT token for authentication.
-                example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                example: Bearer eyJhbGciOi...
           content:
             application/json:
               schema:
@@ -111,15 +100,8 @@ paths:
                     type: string
                     example: '123e4567-e89b-12d3-a456-426614174000'
         '401':
-          description: Invalid credentials.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Invalid username or password.
+          $ref: '#/components/responses/Unauthorized'
+
   /logout:
     post:
       summary: User logout
@@ -140,22 +122,14 @@ paths:
                     type: string
                     example: Logout successful.
         '401':
-          description: Unauthorized.
-  /{userId}/profile:
+          $ref: '#/components/responses/Unauthorized'
+
+  /profile:
     get:
       summary: Get user profile
       operationId: getUserProfile
       tags:
         - User Management
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: Unique ID of the user.
-          example: '123e4567-e89b-12d3-a456-426614174000'
       security:
         - bearerAuth: []
       responses:
@@ -168,38 +142,25 @@ paths:
                 properties:
                   userId:
                     type: string
-                    example: '123e4567-e89b-12d3-a456-426614174000'
                   username:
                     type: string
-                    example: johndoe
                   email:
                     type: string
                     format: email
-                    example: john.doe@example.com
                   firstName:
                     type: string
-                    example: John
                   lastName:
                     type: string
-                    example: Doe
         '401':
-          description: Unauthorized.
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: User not found.
+          $ref: '#/components/responses/NotFound'
+
     put:
       summary: Update user profile
       operationId: updateUserProfile
       tags:
         - User Management
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: Unique ID of the user.
-          example: '123e4567-e89b-12d3-a456-426614174000'
       security:
         - bearerAuth: []
       requestBody:
@@ -212,16 +173,10 @@ paths:
                 email:
                   type: string
                   format: email
-                  description: New email address.
-                  example: new.email@example.com
                 firstName:
                   type: string
-                  description: New first name.
-                  example: Jonathan
                 lastName:
                   type: string
-                  description: New last name.
-                  example: Smith
       responses:
         '200':
           description: User profile updated successfully.
@@ -234,11 +189,12 @@ paths:
                     type: string
                     example: User profile updated successfully.
         '400':
-          description: Invalid input.
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized.
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: User not found.
+          $ref: '#/components/responses/NotFound'
+
   /password/reset-request:
     post:
       summary: Request password reset
@@ -257,11 +213,10 @@ paths:
                 email:
                   type: string
                   format: email
-                  description: Email address of the user requesting password reset.
                   example: john.doe@example.com
       responses:
         '200':
-          description: Password reset email sent successfully (if email exists).
+          description: Password reset email sent successfully.
           content:
             application/json:
               schema:
@@ -271,7 +226,8 @@ paths:
                     type: string
                     example: Password reset email sent.
         '400':
-          description: Invalid email format.
+          $ref: '#/components/responses/BadRequest'
+
   /password/reset:
     post:
       summary: Reset password
@@ -290,12 +246,10 @@ paths:
               properties:
                 token:
                   type: string
-                  description: Password reset token received via email.
-                  example: 'some_long_reset_token'
+                  example: some_long_token
                 newPassword:
                   type: string
                   format: password
-                  description: New password for the user.
                   example: NewSecureP@ssw0rd
       responses:
         '200':
@@ -309,7 +263,8 @@ paths:
                     type: string
                     example: Password reset successfully.
         '400':
-          description: Invalid token or password.
+          $ref: '#/components/responses/BadRequest'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -317,4 +272,50 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Invalid input
+        details:
+          type: string
+          example: Email format is incorrect or already in use
 
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad request
+            details: The email provided is not valid
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+            details: Invalid or missing authentication token
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: User not found
+            details: The user ID is invalid or no user exists

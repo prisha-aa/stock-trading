@@ -1,0 +1,16 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/ErrorResponse.md
+docs/GetUserPortfolio200Response.md
+docs/GetUserPortfolio200ResponseHoldingsInner.md
+docs/GetUserPortfolioSummary200Response.md
+docs/GetUserPortfolioSummary200ResponsePerformance.md
+docs/GetUserPortfolioSummary200ResponseTransactionsInner.md
+docs/PortfolioManagementApi.md
+git_push.sh
+index.ts

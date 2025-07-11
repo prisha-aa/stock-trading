@@ -1,0 +1,17 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/CompanyInformationApi.md
+docs/ErrorResponse.md
+docs/GetCompanyProfile200Response.md
+docs/GetCompanyProfile200ResponseFinancials.md
+docs/GetHistoricalData200Response.md
+docs/GetHistoricalData200ResponseHistoryInner.md
+docs/GetMarketQuotes200ResponseInner.md
+docs/MarketDataApi.md
+git_push.sh
+index.ts

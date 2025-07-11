@@ -1,0 +1,15 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/CreateTransaction201Response.md
+docs/CreateTransactionRequest.md
+docs/ErrorResponse.md
+docs/FundServiceApi.md
+docs/GetFundsOverview200Response.md
+docs/GetFundsOverview200ResponseTransactionsInner.md
+git_push.sh
+index.ts

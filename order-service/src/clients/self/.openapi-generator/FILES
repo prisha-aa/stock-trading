@@ -1,0 +1,15 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/CancelOrder200Response.md
+docs/ErrorResponse.md
+docs/OrderManagementApi.md
+docs/OrderResponse.md
+docs/PlaceOrderRequest.md
+docs/UpdateOrderRequest.md
+git_push.sh
+index.ts

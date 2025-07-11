@@ -1,30 +1,24 @@
 openapi: 3.0.0
 info:
   title: Fund Service API
-  version: 1.0.0
-  description: API for managing user fund transactions and balance overview.
+  version: 1.0.1
+  description: API for managing fund transactions and balance overview for the authenticated user.
 servers:
   - url: http://localhost:3002/funds
     description: Local development server
 tags:
   - name: Fund Service
     description: Operations related to deposits, withdrawals, and fund overview.
+
 paths:
-  /users/{userId}/transactions:
+  /transactions:
     post:
-      summary: Create a deposit or withdrawal transaction for a user
-      operationId: createUserTransaction
+      summary: Create a deposit or withdrawal transaction
+      operationId: createTransaction
       tags:
         - Fund Service
       security:
         - bearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         required: true
         content:
@@ -76,30 +70,19 @@ paths:
                     type: string
                     format: date-time
                     example: 2025-07-09T17:30:00Z
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
 
-  /users/{userId}/funds/overview:
+  /funds/overview:
     get:
-      summary: Retrieve user's current balance and recent fund transactions
-      operationId: getUserFundsOverview
+      summary: Retrieve balance and recent transactions for the authenticated user
+      operationId: getFundsOverview
       tags:
         - Fund Service
       security:
         - bearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
       responses:
         '200':
           description: Funds overview retrieved successfully
@@ -135,14 +118,10 @@ paths:
                         description:
                           type: string
                           example: "ATM withdrawal"
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
 
 components:
   securitySchemes:
@@ -160,11 +139,11 @@ components:
           example: 400
         message:
           type: string
-          example: Invalid user ID format
+          example: Invalid request
         details:
           type: string
           nullable: true
-          example: User ID must be a valid UUID
+          example: Type must be deposit or withdrawal
 
   responses:
     BadRequest:
@@ -176,7 +155,7 @@ components:
           example:
             code: 400
             message: Invalid request data
-            details: Amount must be positive and type must be deposit or withdrawal
+            details: Amount must be a positive number
 
     Unauthorized:
       description: Unauthorized
@@ -197,8 +176,8 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             code: 404
-            message: User not found
-            details: No user exists with the given userId
+            message: Not Found
+            details: No user account or transaction history found
 
     InternalServerError:
       description: Internal Server Error
@@ -209,4 +188,4 @@ components:
           example:
             code: 500
             message: Internal server error
-            details: Unexpected error occurred while processing the request
+            details: An unexpected error occurred on the server

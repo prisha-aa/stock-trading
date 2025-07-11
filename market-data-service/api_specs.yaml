@@ -3,14 +3,17 @@ info:
   title: Market Data & Information Service API
   version: 1.0.0
   description: API for retrieving real-time and historical market data, and company information.
+
 servers:
   - url: http://localhost:3000
     description: Local development server
+
 tags:
   - name: Market Data
     description: Operations related to stock prices, quotes, and historical data.
   - name: Company Information
     description: Operations related to company profiles and financial statements.
+
 paths:
   /market-data/quotes:
     get:
@@ -57,7 +60,8 @@ paths:
                       format: int64
                       example: 1678886400
         '400':
-          description: Invalid symbols provided.
+          $ref: '#/components/responses/BadRequest'
+
   /market-data/history/{symbol}:
     get:
       summary: Get historical stock data for a symbol
@@ -126,7 +130,8 @@ paths:
                           type: integer
                           example: 75000000
         '404':
-          description: Symbol not found or no data for the specified range/interval.
+          $ref: '#/components/responses/NotFound'
+
   /companies/{symbol}/profile:
     get:
       summary: Get company profile and financial statements
@@ -193,6 +198,42 @@ paths:
                         format: float
                         example: 2700000000000
         '404':
-          description: Company profile not found for the given symbol.
+          $ref: '#/components/responses/NotFound'
 
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Invalid query parameters
+        details:
+          type: string
+          example: One or more provided stock symbols are invalid
 
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Invalid query parameters
+            details: The "symbols" parameter must be provided and contain at least one symbol
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Symbol not found
+            details: No data available for symbol "XYZ"
