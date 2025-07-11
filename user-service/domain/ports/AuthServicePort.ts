@@ -4,3 +4,4 @@ export interface AuthServicePort {
   
   register(username: string, email: string, password: string): Promise<User>;
 }
+#
