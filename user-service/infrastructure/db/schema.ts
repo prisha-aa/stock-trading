@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp ,integer, uuid } from 'drizzle-orm/pg-core';
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   username: text('username').notNull(),
@@ -9,3 +9,10 @@ export const users = pgTable('users', {
 });
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+
+export const tokens = pgTable('tokens', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: integer('user_id').notNull(),
+  token: text('token').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});

@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 api.ts
 base.ts
 common.ts
@@ -10,6 +9,7 @@ docs/GetUserProfile200Response.md
 docs/LoginUser200Response.md
 docs/LoginUserRequest.md
 docs/LogoutUser200Response.md
+docs/LogoutUserRequest.md
 docs/RegisterUser201Response.md
 docs/RegisterUserRequest.md
 docs/RequestPasswordReset200Response.md

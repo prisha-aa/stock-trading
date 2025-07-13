@@ -3,6 +3,7 @@ info:
   title: User Service API
   version: 1.0.0
   description: API for managing user accounts and profiles.
+
 servers:
   - url: http://localhost:3000/users
     description: Local development server
@@ -52,8 +53,8 @@ paths:
                     type: string
                     example: User registered successfully.
                   userId:
-                    type: string
-                    example: '123e4567-e89b-12d3-a456-426614174000'
+                    type: number
+                    example: 123
         '400':
           $ref: '#/components/responses/BadRequest'
 
@@ -83,11 +84,6 @@ paths:
       responses:
         '200':
           description: User logged in successfully.
-          headers:
-            Authorization:
-              schema:
-                type: string
-                example: Bearer eyJhbGciOi...
           content:
             application/json:
               schema:
@@ -97,8 +93,13 @@ paths:
                     type: string
                     example: Login successful.
                   userId:
+                    type: number
+                    example: 123
+                  token:
                     type: string
-                    example: '123e4567-e89b-12d3-a456-426614174000'
+                    example: eyJhbGciOi...
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -108,8 +109,18 @@ paths:
       operationId: logoutUser
       tags:
         - User Management
-      security:
-        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  example: eyJhbGciOi...
       responses:
         '200':
           description: User logged out successfully.
@@ -121,6 +132,8 @@ paths:
                   message:
                     type: string
                     example: Logout successful.
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -141,7 +154,7 @@ paths:
                 type: object
                 properties:
                   userId:
-                    type: string
+                    type: number
                   username:
                     type: string
                   email:
@@ -156,7 +169,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-    put:
+    patch:
       summary: Update user profile
       operationId: updateUserProfile
       tags:

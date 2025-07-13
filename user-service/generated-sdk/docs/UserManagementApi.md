@@ -104,13 +104,14 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-|**200** | User logged in successfully. |  * Authorization -  <br>  |
+|**200** | User logged in successfully. |  -  |
+|**400** | Bad Request |  -  |
 |**401** | Unauthorized |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **logoutUser**
-> LogoutUser200Response logoutUser()
+> LogoutUser200Response logoutUser(logoutUserRequest)
 
 
 ### Example
@@ -118,17 +119,25 @@ No authorization required
 ```typescript
 import {
     UserManagementApi,
-    Configuration
+    Configuration,
+    LogoutUserRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new UserManagementApi(configuration);
 
-const { status, data } = await apiInstance.logoutUser();
+let logoutUserRequest: LogoutUserRequest; //
+
+const { status, data } = await apiInstance.logoutUser(
+    logoutUserRequest
+);
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **logoutUserRequest** | **LogoutUserRequest**|  | |
 
 
 ### Return type
@@ -137,11 +146,11 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[bearerAuth](../README.md#bearerAuth)
+No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 
@@ -149,6 +158,7 @@ This endpoint does not have any parameters.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 |**200** | User logged out successfully. |  -  |
+|**400** | Bad Request |  -  |
 |**401** | Unauthorized |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

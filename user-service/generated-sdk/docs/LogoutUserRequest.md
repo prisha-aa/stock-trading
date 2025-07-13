@@ -1,21 +1,19 @@
-# RegisterUser201Response
+# LogoutUserRequest
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**message** | **string** |  | [optional] [default to undefined]
-**userId** | **string** |  | [optional] [default to undefined]
+**token** | **string** |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { RegisterUser201Response } from './api';
+import { LogoutUserRequest } from './api';
 
-const instance: RegisterUser201Response = {
-    message,
-    userId,
+const instance: LogoutUserRequest = {
+    token,
 };
 ```
 
