@@ -2,7 +2,7 @@
 import { AuthServicePort } from "../domain/ports/AuthServicePort";
 import { UserRepositoryPort } from "../domain/ports/UserRepositoryPort";
 import { EventPublisherPort } from "../domain/ports/EventPublisherPort";
-import { User } from "../domain/User";
+import { UpdateUserProfileInput, User } from "../domain/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { TokenRepositoryPort } from "../domain/ports/TokenRepositoryPort";
@@ -11,7 +11,7 @@ export class UserService implements AuthServicePort {
   constructor(
     private userRepository: UserRepositoryPort,
     private eventPublisher: EventPublisherPort,
-    private tokenRepo: TokenRepositoryPort
+    private tokenRepo: TokenRepositoryPort,
   ) {}
 
   async register(username: string, email: string, password: string): Promise<User> {
@@ -61,4 +61,25 @@ return token;
 
 
 }
+async getProfile(userId:number): Promise<User> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) throw new Error("User not found");
+    return user;}
+
+async update(
+  userId: number,
+  update: UpdateUserProfileInput
+): Promise<User> {
+  const { email, firstName, lastName } = update;
+  const user = await this.userRepository.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  if (email !== undefined) user.email = email;
+  if (firstName !== undefined) user.firstName = firstName;
+  if (lastName !== undefined) user.lastName = lastName;
+
+  await this.userRepository.update(user);
+  return user;
+}
+
 }
