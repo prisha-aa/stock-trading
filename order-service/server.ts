@@ -13,7 +13,8 @@ import { GetUserOrdersUseCase } from "./application/GetUserOrdersUseCase";
 import { GetOrderDetailsUseCase } from "./application/GetOrderDetailsUseCase";
 import { UpdateOrderUseCase } from "./application/UpdateOrderUseCase";
 import { CancelOrderUseCase } from "./application/CancelOrderUseCase";
-import { createOrderRouter } from "./infrastructure/api/orderRouter";
+import { createOrderRouter } from "./infrastructure/api/orderController";
+import { OrderDomainService } from "./domain/OrderDomainService";
 config(); 
 
 const app = express();
@@ -34,3 +35,21 @@ const topicMap = {
 };
 
 const region = process.env.AWS_REGION!;
+
+const orderRepo = new DrizzleOrderRepositoryAdapter(db);
+const orderDomainService = new OrderDomainService();
+const eventPublisher = new EventPublisherAdapter(region, topicMap);
+
+
+
+const placeOrderUseCase = new PlaceOrderUseCase(eventPublisher, orderRepo, orderDomainService);
+const getUserOrdersUseCase = new GetUserOrdersUseCase(orderRepo, orderDomainService);
+const getOrderDetailsUseCase = new GetOrderDetailsUseCase(orderRepo, orderDomainService);
+const updateOrderUseCase = new UpdateOrderUseCase(eventPublisher, orderRepo, orderDomainService);
+const cancelOrderUseCase = new CancelOrderUseCase(orderRepo, orderDomainService);
+
+app.use("/orders", createOrderRouter(placeOrderUseCase, getUserOrdersUseCase, getOrderDetailsUseCase, updateOrderUseCase, cancelOrderUseCase));
+
+app.listen(3001, () => {
+  console.log(" Order service running on port 3001");
+});
