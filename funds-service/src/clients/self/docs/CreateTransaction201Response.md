@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **transactionId** | **string** |  | [optional] [default to undefined]
-**userId** | **string** |  | [optional] [default to undefined]
+**userId** | **number** |  | [optional] [default to undefined]
 **type** | **string** |  | [optional] [default to undefined]
 **amount** | **number** |  | [optional] [default to undefined]
 **description** | **string** |  | [optional] [default to undefined]

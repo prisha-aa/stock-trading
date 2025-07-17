@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost:3002/funds*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**createTransaction**](#createtransaction) | **POST** /transactions | Create a deposit or withdrawal transaction|
+|[**createTransaction**](#createtransaction) | **POST** /funds/transactions | Create a deposit or withdrawal transaction|
 |[**getFundsOverview**](#getfundsoverview) | **GET** /funds/overview | Retrieve balance and recent transactions for the authenticated user|
 
 # **createTransaction**

@@ -37,10 +37,10 @@ export interface CreateTransaction201Response {
     'transactionId'?: string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof CreateTransaction201Response
      */
-    'userId'?: string;
+    'userId'?: number;
     /**
      * 
      * @type {string}
@@ -213,7 +213,7 @@ export const FundServiceApiAxiosParamCreator = function (configuration?: Configu
         createTransaction: async (createTransactionRequest: CreateTransactionRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createTransactionRequest' is not null or undefined
             assertParamExists('createTransaction', 'createTransactionRequest', createTransactionRequest)
-            const localVarPath = `/transactions`;
+            const localVarPath = `/funds/transactions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

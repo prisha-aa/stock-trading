@@ -11,7 +11,7 @@ tags:
     description: Operations related to deposits, withdrawals, and fund overview.
 
 paths:
-  /transactions:
+  /funds/transactions:
     post:
       summary: Create a deposit or withdrawal transaction
       operationId: createTransaction
@@ -52,9 +52,9 @@ paths:
                     type: string
                     example: tx789
                   userId:
-                    type: string
-                    format: uuid
-                    example: 123e4567-e89b-12d3-a456-426614174000
+                    type: number
+                    
+                    example: 123
                   type:
                     type: string
                     enum: [deposit, withdrawal]
