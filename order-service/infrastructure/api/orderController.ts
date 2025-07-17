@@ -33,12 +33,18 @@ const GetOrderDetailsSchema = z.object({
   orderId: z.string().min(1, "Order ID is required"),
 });
 
-const UpdateOrderSchema = z.object({
-  userId: z.number().min(1, "User ID is required"),
-  orderId: z.string().min(1, "Order ID is required"),
-  quantity: z.number().int().positive("Quantity must be a positive integer"),
-  price: z.number().positive("Price must be a positive number"),
-});
+const UpdateOrderSchema = z
+  .object({
+    userId: z.number().min(1, "User ID is required"),
+    orderId: z.string().min(1, "Order ID is required"),
+    quantity: z.number().int().positive("Quantity must be a positive integer").optional(),
+    price: z.number().positive("Price must be a positive number").optional(),
+  })
+  .refine((data) => data.quantity !== undefined || data.price !== undefined, {
+    message: "At least one of quantity or price must be provided",
+    path: ["price"], // attaches the error to 'price' field to match your error style
+  });
+
 
 const CancelOrderSchema = z.object({
   userId: z.number().min(1, "User ID is required"),

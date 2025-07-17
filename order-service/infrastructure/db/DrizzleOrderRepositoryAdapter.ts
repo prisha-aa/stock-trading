@@ -1,7 +1,7 @@
 import { Order, OrderStatus, OrderType } from "../../domain/Order";
 import { orders } from "./schema";
 import { OrderRepositoryPort } from "../../domain/ports/OrderRepositoryPort";
-import { eq } from "drizzle-orm";
+import { eq, and, lt } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { OrderUpdateData } from "../../domain/Order";
 
@@ -124,5 +124,37 @@ async delete(orderId: string): Promise<boolean> {
 
   return !!deleted;
 }
+
+async updateStatus(orderId: string, status: "pending" | "completed"): Promise<void> {
+        await this.db.update(orders)
+            .set({ status })
+            .where(eq(orders.orderId, orderId));
+    }
+
+    async getPendingOrdersOlderThan(minutes: number): Promise<Order[]> {
+  const twoMinutesAgo = new Date(Date.now() - minutes * 60 * 1000);
+
+  const result = await this.db
+    .select({
+      orderId: orders.orderId,
+      userId: orders.userId,
+      type: orders.type,
+      stockSymbol: orders.stockSymbol,
+      quantity: orders.quantity,
+      price: orders.price,
+      status: orders.status,
+      createdAt: orders.createdAt,
+    })
+    .from(orders)
+    .where(and(eq(orders.status, "pending"), lt(orders.createdAt, twoMinutesAgo)));
+
+  return result.map(record => ({
+    ...record,
+    type: record.type as OrderType,
+    status: record.status as OrderStatus,
+    createdAt: new Date(record.createdAt),
+  }));
+}
+
 
 }

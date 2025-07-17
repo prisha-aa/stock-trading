@@ -23,6 +23,7 @@ export class UpdateOrderUseCase {
       quantity: updated.quantity,
       price: updated.price,
       updatedAt: new Date().toISOString(),
+      status: updated.status,
     });
         return updated;
     }

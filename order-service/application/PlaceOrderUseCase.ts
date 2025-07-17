@@ -26,10 +26,12 @@ export class PlaceOrderUseCase {
         await this.orderRepository.save(newOrder);
         await this.eventPublisher.publish('order.placed', {
       orderId: newOrder.orderId,
+      userId: newOrder.userId,
       type: newOrder.type,
       stockSymbol: newOrder.stockSymbol,
       quantity: newOrder.quantity,
       price: newOrder.price,
+      amount: newOrder.quantity * newOrder.price, 
       status: newOrder.status,
       createdAt: newOrder.createdAt
     });

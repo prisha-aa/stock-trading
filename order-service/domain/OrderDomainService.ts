@@ -5,8 +5,8 @@ export class OrderDomainService {
         }
     
     validateOrderStatusForUpdate(order: Order): void {
-    if (order.status === "pending") {
-      throw new Error("Cannot update order while it is pending.");
+    if (order.status === "completed") {
+      throw new Error("Cannot update order when it is already completed and placed.");
     }
   }
 

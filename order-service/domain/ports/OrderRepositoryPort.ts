@@ -7,4 +7,6 @@ export interface OrderRepositoryPort {
     findByUserId(userId:number): Promise<Order[]>;
     update(orderId: string, data: OrderUpdateData): Promise<Order | null>;
     delete(orderId: string): Promise<boolean>;
+    updateStatus(orderId: string, status: "pending" | "completed"): Promise<void>;
+    getPendingOrdersOlderThan(minutes: number): Promise<Order[]>;
 }
