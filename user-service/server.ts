@@ -15,6 +15,7 @@ import { GetUserProfileUseCase } from "./application/GetUserProfileUseCase";
 import { UpdateUserProfileUseCase } from "./application/UpdateUserProfileUseCase";
 import { EmailServiceAdapter } from "./infrastructure/EmailServiceAdapter";
 import { RequestPasswordResetUseCase } from "./application/RequestPasswordResetUseCase";
+import { ResetPasswordUseCase } from "./application/ResetPasswordUseCase";
 
 
 config(); 
@@ -42,11 +43,12 @@ const loginUserUseCase = new LoginUserUseCase(userService);
 const logoutUserUseCase = new LogoutUserUseCase(userService);
 const getUserProfileUseCase = new GetUserProfileUseCase(userService);
 const updateUserProfileUseCase = new UpdateUserProfileUseCase(userService);
-const requestPasswordResetUseCase = new RequestPasswordResetUseCase(emailService,userRepo);
+const requestPasswordResetUseCase = new RequestPasswordResetUseCase(userRepo,tokenRepo, emailService);
+const resetPasswordUseCase = new ResetPasswordUseCase(userRepo,tokenRepo);
 
-app.use("/user", createAuthRouter(registerUserUseCase,loginUserUseCase,logoutUserUseCase,getUserProfileUseCase,updateUserProfileUseCase,requestPasswordResetUseCase));
+app.use("/user", createAuthRouter(registerUserUseCase,loginUserUseCase,logoutUserUseCase,getUserProfileUseCase,updateUserProfileUseCase,requestPasswordResetUseCase,resetPasswordUseCase));
 
 
-app.listen(3000, () => {
+app.listen(7000, () => {
   console.log(" User service running on port 3000");
 });

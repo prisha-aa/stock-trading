@@ -7,7 +7,8 @@ export class User {
     public createdAt: Date,
     public updatedAt: Date,
     public firstName: string | null,
-  public lastName: string | null
+  public lastName: string | null,
+   
   ) {}
 
   updateProfile(update: UpdateUserProfileInput) {

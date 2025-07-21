@@ -20,4 +20,20 @@ export class DrizzleTokenRepository implements TokenRepositoryPort {
     const result = await this.db.select().from(tokens).where(eq(tokens.token, token));
     return result.length > 0;
   }
+  async findByToken(token: string): Promise<{ userId: number; token: string; createdAt: Date } | null> {
+  const result = await this.db.select().from(tokens).where(eq(tokens.token, token));
+  const record = result[0];
+
+  
+  if (!record || record.createdAt === null) return null;
+
+  return {
+    userId: record.userId,
+    token: record.token,
+    createdAt: record.createdAt, // now guaranteed to be Date
+  };
+}
+
+
+
 }

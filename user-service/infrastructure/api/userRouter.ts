@@ -12,12 +12,14 @@ import {
   GetUserProfile200Response,
   UpdateUserProfile200Response,
   RequestPasswordReset200Response,
+  ResetPassword200Response,
 } from "../../generated-sdk/api";
 import z, { ZodError } from "zod";
 import { authMiddleware } from "./middleware/authMiddleware";
 import { GetUserProfileUseCase } from "../../application/GetUserProfileUseCase";
 import { UpdateUserProfileUseCase } from "../../application/UpdateUserProfileUseCase";
 import { RequestPasswordResetUseCase } from "../../application/RequestPasswordResetUseCase";
+import { ResetPasswordUseCase } from "../../application/ResetPasswordUseCase";
 
 const RegisterUserSchema = z.object({
   username: z
@@ -49,6 +51,10 @@ const PasswordResetSchema = z.object({
   email: z.string().email(),
 });
 
+const ResetPasswordSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export const createAuthRouter = (
   registerUserUseCase: RegisterUserUseCase,
@@ -56,7 +62,8 @@ export const createAuthRouter = (
   logoutUserUseCase: LogoutUserUseCase,
   getUserProfileUseCase: GetUserProfileUseCase,
   updateUserProfileUseCase: UpdateUserProfileUseCase,
-  requestPasswordResetUseCase: RequestPasswordResetUseCase
+  requestPasswordResetUseCase: RequestPasswordResetUseCase,
+  resetPasswordUseCase: ResetPasswordUseCase
 ) => {
   const router = Router();
 
@@ -165,68 +172,69 @@ export const createAuthRouter = (
   });
 
 
-  router.get("/profile", async (req: Request, res: Response) => {
-    return res.status(200).json({ message: "Hello world" });
-  });
+  
 
    interface AuthenticatedRequest extends Request {
    userId?: number;
  }
 
-//   router.get("/profile",authMiddleware, async (req: Request, res: Response) => {
+  router.get("/profile",authMiddleware, async (req: Request, res: Response) => {
     
 
 
 
 
-//        try {
-//         console.log("🔍 Inside GET /profile route");
-//          const { userId } = req as AuthenticatedRequest;
-//           if (!userId) {
-//          return res.status(401).json({
-//         code: 401,
-//         message: "Unauthorized",
-//         details: "Missing user ID in request",
-//       });
-//     }
-//       const user = await getUserProfileUseCase.execute(userId);
-//       const response: GetUserProfile200Response = {
-//   userId: user.id,
-//   username: user.username,
-//   email: user.email,
-//   firstName: user.firstName ?? undefined,
-//   lastName: user.lastName ?? undefined,
-// };  
-//       return res.status(200).json(response);
-//     } catch (error) {
-//       if (error instanceof ZodError) {
-//         const details = Object.entries(error.flatten().fieldErrors)
-//           .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
-//           .join(" | ");
+       try {
+        console.log("🔍 Inside GET /profile route");
+         const { userId } = req as AuthenticatedRequest;
+          if (!userId) {
+         return res.status(401).json({
+        code: 401,
+        message: "Unauthorized",
+        details: "Missing user ID in request",
+      });
+    }
+      const user = await getUserProfileUseCase.execute(userId);
+      const response: GetUserProfile200Response = {
+  userId: user.id,
+  username: user.username,
+  email: user.email,
+  firstName: user.firstName ?? undefined,
+  lastName: user.lastName ?? undefined,
+};  
+      return res.status(200).json(response);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const details = Object.entries(error.flatten().fieldErrors)
+          .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+          .join(" | ");
 
-//         return res.status(400).json({
-//           code: 400,
-//           message: "Validation failed",
-//           details,
-//         });
-//       }
+        return res.status(400).json({
+          code: 400,
+          message: "Validation failed",
+          details,
+        });
+      }
 
-//       const errorResponse: ErrorResponse = {
-//         code: 404,
-//         message: "User not found",
-//         details: (error as Error).message ?? "User not found",
-//       };
+      const errorResponse: ErrorResponse = {
+        code: 404,
+        message: "User not found",
+        details: (error as Error).message ?? "User not found",
+      };
 
-//       return res.status(404).json(errorResponse);
-//     }});
+      return res.status(404).json(errorResponse);
+    }});
 
     router.patch("/profile",authMiddleware, async (req: Request, res: Response) => {
       try {
+        console.log("👀 Incoming PATCH /profile body:", req.body);
+
         const { userId } = req as AuthenticatedRequest;
-        if (!userId) {
+        
+          if (!userId) {
           return res.status(401).json({
             code: 401,
-            message: "Unauthorized",
+            message: "Unauthori chapters",
             details: "Missing user ID in request",
           });
         }
@@ -261,6 +269,7 @@ export const createAuthRouter = (
     });
 
     router.post("/password/reset-request", async (req: Request, res: Response) => {
+      console.log("📩 Incoming password reset request:", req.body);
       try {
         const validated = PasswordResetSchema.parse(req.body);
         await requestPasswordResetUseCase.execute(validated.email);
@@ -281,6 +290,35 @@ export const createAuthRouter = (
           });
         }
       }});
+
+      router.post("/password/reset", async (req: Request, res: Response) => {
+        try {
+          const validated = ResetPasswordSchema.parse(req.body);
+          await resetPasswordUseCase.execute(validated.token, validated.newPassword);
+          const response: ResetPassword200Response = {
+            message: "Password reset successfully",
+          };
+          return res.status(200).json(response);
+        } catch (error) {
+          if (error instanceof ZodError) {
+            const details = Object.entries(error.flatten().fieldErrors)
+              .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+              .join(" | ");
+
+            return res.status(400).json({
+              code: 400,
+              message: "Validation failed",
+              details,
+            });
+          }
+          const errorResponse: ErrorResponse = {
+            code: 400,
+            message: "Reset password failed",
+            details: (error as Error).message ?? "Unknown error",
+          };
+          return res.status(400).json(errorResponse);
+        }
+      });
 
   
 

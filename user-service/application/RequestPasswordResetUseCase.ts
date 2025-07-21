@@ -1,23 +1,31 @@
 import { EmailServicePort } from "../domain/ports/EmailServicePort";
+import { TokenRepositoryPort } from "../domain/ports/TokenRepositoryPort";
 import { UserRepositoryPort } from "../domain/ports/UserRepositoryPort";
 import crypto from "crypto";
 
 export class RequestPasswordResetUseCase {
   constructor(
-    private emailService: EmailServicePort,
-    private userRepo: UserRepositoryPort,
-
+    private userRepository: UserRepositoryPort,
+    private tokenRepository: TokenRepositoryPort,
+    private emailService: EmailServicePort
   ) {}
+
   async execute(email: string): Promise<void> {
-    const user = await this.userRepo.findByEmail(email);
-    if (!user) throw new Error("User not found");   
+    console.log("📩 Incoming password reset request:", { email });
 
-    const token=crypto.randomBytes(32).toString('hex');
-    const expiry=new Date(Date.now()+1000*60*30);
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) throw new Error("User not found");
 
-    await this.userRepo.saveResetToken(user.id,token,expiry);
-    await this.emailService.sendPasswordReset(email,token);
+    const token = crypto.randomBytes(32).toString("hex");
+
+    await this.tokenRepository.save({
+  userId: user.id,
+  token,
+  createdAt: new Date(),
+});
 
     
+    console.log("📬 Calling emailService.sendPasswordReset...");
+    await this.emailService.sendPasswordReset(email, token);
   }
 }
