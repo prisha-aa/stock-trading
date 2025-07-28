@@ -11,6 +11,7 @@ import { FundDomainService } from "./domain/FundDomainService";
 import { DrizzleUserBalanceRepositoryAdapter } from "./infrastructure/db/DrizzleUserBalanceRepositryAdapter";
 import { DrizzleTransactionRepositoryAdapter } from "./infrastructure/db/DrizzleTransactionRepositoryAdapter";
 import { createFundRouter } from "./infrastructure/api/fundRouter";
+import './infrastructure/poller/PollerManager';
 
 
 config();
@@ -26,22 +27,18 @@ const eventPublisher = new EventPublisherAdapter("ap-south-1", process.env.SNS_T
 
 const fundDomainService = new FundDomainService();
 const createTransactionUseCase = new CreateTransactionUseCase(
-  transactionRepository,
-  eventPublisher,
-  fundDomainService,
-  userBalanceRepository
+  transactionRepository,eventPublisher,fundDomainService,userBalanceRepository,db
 );
-const getTransactionsUseCase = new GetTransactionsUseCase(
-  transactionRepository,
-
+const getTransactionsUseCase = new GetTransactionsUseCase(transactionRepository,
 );
 
 const app = express();
 app.use(express.json());
-
+console.log(" Outbox poller worker running");
 app.use("/funds", createFundRouter(createTransactionUseCase, getTransactionsUseCase));
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
   console.log(`🚀 Fund Service running on port ${PORT}`);
 });
+
