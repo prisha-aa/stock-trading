@@ -1,8 +1,8 @@
 import { z, ZodError } from 'zod';
 
 import { Request, Response, Router } from 'express';
-import { GetCompanyProfileUseCase } from '../application/GetCompanyProfileUseCase';
-import { GetHistoricalDataUseCase } from '../application/GetHistoricalDataUseCase';
+import { GetCompanyProfileUseCase } from '../../../application/GetCompanyProfileUseCase';
+import { GetHistoricalDataUseCase } from '../../../application/GetHistoricalDataUseCase';
 
 
 export const MarketDataHistoryQuerySchema = z.object({

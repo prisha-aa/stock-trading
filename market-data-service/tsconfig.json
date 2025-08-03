@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "types": ["jest", "node"]  // 👈 this line is critical
+  },
+  "include": [
+  "./**/*.ts"
+]
+, // 👈 make sure your test files are included
+  "exclude": ["node_modules"]
+}

@@ -1,7 +1,7 @@
-import { ExternalApiDataProviderPort} from "../domain/ports/ExternalApiDataProviderPort";
+import { ExternalApiDataProviderPort} from "../../domain/ports/ExternalApiDataProviderPort";
 import axios from "axios";
-import { CompanyProfile } from "../domain/models/CompanyProfile";
-import { HistoricalData } from "../domain/models/HistoricalData";
+import { CompanyProfile } from "../../domain/models/CompanyProfile";
+import { HistoricalData } from "../../domain/models/HistoricalData";
 
 
 
